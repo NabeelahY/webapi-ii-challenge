@@ -69,4 +69,33 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.post("/:id/comments", async (req, res) => {
+  const { id } = req.params;
+  const { text } = req.body;
+  try {
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({
+        message: "Post does not exist"
+      });
+    }
+
+    if (!text) {
+      res.status(400).json({
+        message: "Please text is required"
+      });
+    } else {
+      const postMsg = await Post.insertComment({
+        post_id: id,
+        text
+      });
+      res.status(201).json(postMsg);
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: err.toString()
+    });
+  }
+});
+
 module.exports = router;
