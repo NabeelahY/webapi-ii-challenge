@@ -96,6 +96,31 @@ router.post("/:id/comments", async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res) => {
+  console.log("object");
+  const { id } = req.params;
+  const { title, contents } = req.body;
+  try {
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({
+        message: "Post does not exist"
+      });
+    } else {
+      await Post.update(id, {
+        title,
+        contents
+      });
+      const editedPost = await Post.findById(id);
+      res.status(200).json(editedPost);
+    }
+  } catch {
+    res.status(500).json({
+      message: err.toString()
+    });
+  }
+});
+
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
