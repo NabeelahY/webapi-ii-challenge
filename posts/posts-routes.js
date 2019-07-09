@@ -14,14 +14,12 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
+  const { id } = req.params;
   try {
-    const post = await Post.findById(req.params.id);
-
-    if (post) {
-      res.status(200).json(post);
-    } else {
-      res.status(404).json({ message: "Post not found" });
-    }
+    const post = await Post.findById(id);
+    !post.length
+      ? res.status(404).json({ message: "Post not found" })
+      : res.status(200).json(post);
   } catch (error) {
     res.status(500).json({
       message: "Error retrieving the post"
@@ -94,6 +92,28 @@ router.post("/:id/comments", async (req, res) => {
   } catch (err) {
     res.status(500).json({
       message: err.toString()
+    });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const post = await Post.findById(id);
+
+  try {
+    if (!post) {
+      res.status(404).json({
+        message: "Post not found"
+      });
+    } else {
+      const archive = await Post.remove(id);
+      console.log(archive);
+      res.status(200).json(post);
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Cannot find comment"
     });
   }
 });
