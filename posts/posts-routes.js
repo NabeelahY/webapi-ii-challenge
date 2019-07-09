@@ -48,4 +48,25 @@ router.get("/:id/comments", async (req, res) => {
   }
 });
 
+router.post("/", async (req, res) => {
+  const { title, contents } = req.body;
+  try {
+    if (!title || !contents) {
+      res.status(400).json({
+        message: "Please title and contents are required"
+      });
+    } else {
+      const postMsg = await Post.insert({
+        title,
+        contents
+      });
+      res.status(201).json(postMsg);
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: err.toString()
+    });
+  }
+});
+
 module.exports = router;
